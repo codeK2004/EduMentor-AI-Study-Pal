@@ -9,7 +9,7 @@
 
 **Your intelligent learning companion that creates personalized study plans, generates interactive quizzes, and provides instant explanations to accelerate your learning journey.**
 
-[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🛠️ Tech Stack](#️-tech-stack) • [📱 Screenshots](#-screenshots)
+[🚀 Quick Start](#-quick-start) • [✨ Features](#-features) • [🛠️ Tech Stack](#️-tech-stack) 
 
 </div>
 
