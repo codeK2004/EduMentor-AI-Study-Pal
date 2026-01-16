@@ -130,32 +130,6 @@ npm run dev
 
 ---
 
-## 📱 Screenshots
-
-### 🔐 Beautiful Authentication
-<div align="center">
-<img src="https://via.placeholder.com/800x500/6366f1/ffffff?text=Login+Page" alt="Login Page" width="400"/>
-<img src="https://via.placeholder.com/800x500/10b981/ffffff?text=Signup+Page" alt="Signup Page" width="400"/>
-</div>
-
-*Stunning gradient backgrounds with glassmorphism design*
-
-### 🏠 Modern Dashboard
-<div align="center">
-<img src="https://via.placeholder.com/800x500/f59e0b/ffffff?text=Home+Dashboard" alt="Dashboard" width="600"/>
-</div>
-
-*Clean, intuitive interface with feature cards and statistics*
-
-### 📅 Smart Planner
-<div align="center">
-<img src="https://via.placeholder.com/800x500/8b5cf6/ffffff?text=Study+Planner" alt="Study Planner" width="600"/>
-</div>
-
-*AI-generated study plans with interactive task completion*
-
----
-
 ## 🎨 Design Features
 
 ### 🌈 **Modern UI/UX**
@@ -214,7 +188,7 @@ We welcome contributions! Here's how you can help:
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is created by Alamanda Steffanie Grace @2026 all rights reserved.
 
 ---
 
@@ -230,7 +204,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 <div align="center">
 
-**Made with ❤️ by the EduMentor AI Team**
+**Made with ❤️ by the Alamanda Steffanie Grace
 
 [⭐ Star this repo](https://github.com/your-username/edumentor-ai) • [🐛 Report Bug](https://github.com/your-username/edumentor-ai/issues) • [💡 Request Feature](https://github.com/your-username/edumentor-ai/issues)
 
