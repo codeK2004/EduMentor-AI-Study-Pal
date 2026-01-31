@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Home from "./pages/Home";
 import Planner from "./pages/Planner";
 import MyPlans from "./pages/MyPlans";
@@ -7,6 +7,7 @@ import Quiz from "./pages/Quiz";
 import AIExplain from "./pages/AIExplain";
 import Resources from "./pages/Resources";
 import Notes from "./pages/Notes";
+import SavedContent from "./pages/SavedContent";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import { isAuthenticated, removeToken } from "./utils/auth";
@@ -15,6 +16,38 @@ export default function App() {
   const [tab, setTab] = useState("home");
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
   const [showSignup, setShowSignup] = useState(false);
+
+  // Check authentication status on mount and periodically
+  useEffect(() => {
+    const checkAuth = () => {
+      const authenticated = isAuthenticated();
+      if (!authenticated && loggedIn) {
+        // User was logged out (token expired or removed)
+        setLoggedIn(false);
+        setTab("home");
+      }
+    };
+
+    // Check immediately
+    checkAuth();
+
+    // Set up listener for storage changes (in case token is removed in another tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'token') {
+        checkAuth();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Check every 30 seconds
+    const interval = setInterval(checkAuth, 30000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [loggedIn]);
 
   const handleLogin = () => {
     setLoggedIn(true);
@@ -115,6 +148,14 @@ export default function App() {
             <span>📝</span>
             Notes
           </button>
+
+          <button
+              className={tab === "saved" ? "nav-btn active" : "nav-btn"}
+              onClick={() => setTab("saved")}
+          >
+            <span>💾</span>
+            Saved
+          </button>
         </aside>
 
         {/* 📄 Page Content */}
@@ -127,6 +168,7 @@ export default function App() {
           {tab === "explain" && <AIExplain />}
           {tab === "resources" && <Resources />}
           {tab === "notes" && <Notes />}
+          {tab === "saved" && <SavedContent />}
         </main>
       </div>
     </div>

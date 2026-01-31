@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import api from "../utils/api";
 
-export default function PlanCard({ day, topic, tasks, onProgressUpdate, completedDays = [] }) {
+export default function PlanCard({ planId, day, topic, tasks, onProgressUpdate, completedDays = [] }) {
   const [completed, setCompleted] = useState(false);
   const [completedTasks, setCompletedTasks] = useState(new Set());
   const [updating, setUpdating] = useState(false);
@@ -32,19 +32,20 @@ export default function PlanCard({ day, topic, tasks, onProgressUpdate, complete
       setCompleted(true);
       setUpdating(true);
       
-      // Update progress in backend with specific day number
+      // Update progress in backend with specific plan ID and day number
       try {
         const response = await api.post("/progress/complete-day", {
+          plan_id: planId,
           day_number: day
         });
-        console.log(`✅ Day ${day} completed! Progress:`, response.data);
+        console.log(`✅ Plan ${planId} - Day ${day} completed! Progress:`, response.data);
         
         // Notify parent component to refresh progress
         if (onProgressUpdate) {
           onProgressUpdate();
         }
       } catch (err) {
-        console.error(`❌ Failed to update progress for day ${day}:`, err);
+        console.error(`❌ Failed to update progress for plan ${planId}, day ${day}:`, err);
         setCompleted(false); // Revert if failed
       } finally {
         setUpdating(false);

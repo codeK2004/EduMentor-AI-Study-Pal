@@ -12,13 +12,19 @@ function MyPlans({ setTab }) {
 
   useEffect(() => {
     fetchPlans();
-    fetchProgress();
   }, [refreshKey]);
+
+  useEffect(() => {
+    fetchProgress();
+  }, [selectedPlan, refreshKey]);
 
   const fetchProgress = async () => {
     try {
-      const res = await api.get("/progress/");
-      setCompletedDays(res.data.completed_day_numbers || []);
+      if (selectedPlan) {
+        // Fetch progress for the selected plan
+        const res = await api.get(`/progress/plan/${selectedPlan.id}`);
+        setCompletedDays(res.data.completed_day_numbers || []);
+      }
     } catch (err) {
       console.error("Failed to fetch progress:", err);
     }
@@ -150,43 +156,194 @@ function MyPlans({ setTab }) {
             </div>
 
             <div className="plans-list">
-              {plans.map((plan) => (
-                <div 
-                  key={plan.id} 
-                  className={`plan-item ${selectedPlan?.id === plan.id ? 'active' : ''}`}
-                  onClick={() => viewPlanDetails(plan.id)}
-                >
-                  <div className="plan-item-header">
-                    <h4>{plan.subject}</h4>
-                    <span className="plan-duration">{plan.deadline_days} days</span>
-                  </div>
-                  <p className="plan-date">
-                    Created {new Date(plan.created_at).toLocaleDateString()}
-                  </p>
-                  <div className="plan-actions">
-                    <button 
-                      className="action-btn regenerate"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        regeneratePlan(plan.id);
-                      }}
-                      title="Regenerate Plan"
-                    >
-                      🔄
-                    </button>
-                    <button 
-                      className="action-btn delete"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deletePlan(plan.id);
-                      }}
-                      title="Delete Plan"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </div>
-              ))}
+              {(() => {
+                // Separate plans into current and completed
+                const currentPlans = plans.filter(plan => {
+                  const planPercent = plan.total_days > 0 ? (plan.completed_days / plan.total_days) * 100 : 0;
+                  return planPercent < 100;
+                });
+                
+                const completedPlans = plans.filter(plan => {
+                  const planPercent = plan.total_days > 0 ? (plan.completed_days / plan.total_days) * 100 : 0;
+                  return planPercent >= 100;
+                });
+
+                return (
+                  <>
+                    {/* Current Plans Section */}
+                    {currentPlans.length > 0 && (
+                      <>
+                        <div style={{ 
+                          padding: '0.75rem 1rem', 
+                          background: '#eff6ff', 
+                          borderRadius: '8px', 
+                          marginBottom: '1rem',
+                          borderLeft: '4px solid #3b82f6'
+                        }}>
+                          <h4 style={{ margin: 0, color: '#1e40af', fontSize: '0.875rem', fontWeight: '600' }}>
+                            🔥 CURRENT PLANS ({currentPlans.length})
+                          </h4>
+                        </div>
+                        {currentPlans
+                          .sort((a, b) => {
+                            const aPercent = a.total_days > 0 ? (a.completed_days / a.total_days) * 100 : 0;
+                            const bPercent = b.total_days > 0 ? (b.completed_days / b.total_days) * 100 : 0;
+                            return aPercent - bPercent; // Least progress first
+                          })
+                          .map((plan) => {
+                            const planPercent = plan.total_days > 0 
+                              ? Math.round((plan.completed_days / plan.total_days) * 100)
+                              : 0;
+                            
+                            return (
+                              <div 
+                                key={plan.id} 
+                                className={`plan-item ${selectedPlan?.id === plan.id ? 'active' : ''}`}
+                                onClick={() => viewPlanDetails(plan.id)}
+                              >
+                                <div className="plan-item-header">
+                                  <h4>{plan.subject}</h4>
+                                  <div className="plan-badges">
+                                    <span className="plan-duration">{plan.deadline_days} days</span>
+                                    <span style={{ 
+                                      background: '#fbbf24', 
+                                      color: '#92400e', 
+                                      padding: '2px 6px', 
+                                      borderRadius: '4px', 
+                                      fontSize: '0.75rem' 
+                                    }}>
+                                      In Progress
+                                    </span>
+                                  </div>
+                                </div>
+                                <p className="plan-date">
+                                  Created {new Date(plan.created_at).toLocaleDateString()}
+                                </p>
+                                
+                                <div className="plan-progress-mini">
+                                  <div className="progress-info">
+                                    <span className="progress-text">
+                                      {plan.completed_days || 0} / {plan.total_days || 0} days
+                                    </span>
+                                    <span className="progress-percent">{planPercent}%</span>
+                                  </div>
+                                  <div className="progress-bar-mini">
+                                    <div
+                                      className="progress-fill-mini"
+                                      style={{ width: `${planPercent}%` }}
+                                    />
+                                  </div>
+                                </div>
+                                
+                                <div className="plan-actions">
+                                  <button 
+                                    className="action-btn edit-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      regeneratePlan(plan.id);
+                                    }}
+                                    title="Regenerate plan"
+                                  >
+                                    🔄
+                                  </button>
+                                  <button 
+                                    className="action-btn delete-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deletePlan(plan.id);
+                                    }}
+                                    title="Delete plan"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </>
+                    )}
+
+                    {/* Completed Plans Section */}
+                    {completedPlans.length > 0 && (
+                      <>
+                        <div style={{ 
+                          padding: '0.75rem 1rem', 
+                          background: '#f0fdf4', 
+                          borderRadius: '8px', 
+                          marginBottom: '1rem',
+                          marginTop: currentPlans.length > 0 ? '2rem' : '0',
+                          borderLeft: '4px solid #22c55e'
+                        }}>
+                          <h4 style={{ margin: 0, color: '#15803d', fontSize: '0.875rem', fontWeight: '600' }}>
+                            ✅ COMPLETED PLANS ({completedPlans.length})
+                          </h4>
+                        </div>
+                        {completedPlans
+                          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) // Most recent first
+                          .map((plan) => {
+                            const planPercent = 100; // Always 100% for completed plans
+                            
+                            return (
+                              <div 
+                                key={plan.id} 
+                                className={`plan-item ${selectedPlan?.id === plan.id ? 'active' : ''}`}
+                                onClick={() => viewPlanDetails(plan.id)}
+                                style={{ opacity: 0.8 }} // Slightly faded to show they're completed
+                              >
+                                <div className="plan-item-header">
+                                  <h4>{plan.subject}</h4>
+                                  <div className="plan-badges">
+                                    <span className="plan-duration">{plan.deadline_days} days</span>
+                                    <span className="completion-badge">✅ Completed</span>
+                                  </div>
+                                </div>
+                                <p className="plan-date">
+                                  Completed {new Date(plan.created_at).toLocaleDateString()}
+                                </p>
+                                
+                                <div className="plan-progress-mini">
+                                  <div className="progress-info">
+                                    <span className="progress-text">
+                                      {plan.total_days || 0} / {plan.total_days || 0} days
+                                    </span>
+                                    <span className="progress-percent">100%</span>
+                                  </div>
+                                  <div className="progress-bar-mini">
+                                    <div
+                                      className="progress-fill-mini"
+                                      style={{ width: '100%', background: '#22c55e' }}
+                                    />
+                                  </div>
+                                </div>
+                                
+                                <div className="plan-actions">
+                                  <button 
+                                    className="action-btn delete-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      deletePlan(plan.id);
+                                    }}
+                                    title="Delete plan"
+                                  >
+                                    🗑️
+                                  </button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </>
+                    )}
+
+                    {/* No Plans Message */}
+                    {currentPlans.length === 0 && completedPlans.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>📚</div>
+                        <p>No study plans yet. Create your first plan to get started!</p>
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           </div>
 
@@ -229,6 +386,7 @@ function MyPlans({ setTab }) {
                     {selectedPlan.plan_data.days.map((dayObj) => (
                       <PlanCard
                         key={dayObj.day}
+                        planId={selectedPlan.id}
                         day={dayObj.day}
                         topic={dayObj.topic}
                         tasks={dayObj.tasks}

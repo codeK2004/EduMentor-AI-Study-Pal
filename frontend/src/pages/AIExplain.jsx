@@ -37,6 +37,7 @@ export default function AIExplain() {
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const handleExplain = async () => {
     if (!question.trim()) return;
@@ -48,6 +49,24 @@ export default function AIExplain() {
 
     setAnswer(res.data.explanation);
     setLoading(false);
+  };
+
+  const saveExplanation = async () => {
+    if (!question.trim() || !answer.trim()) return;
+
+    setSaving(true);
+    try {
+      await api.post("/saved/explanations", {
+        topic: question.split(' ').slice(0, 3).join(' '), // First 3 words as topic
+        question: question,
+        explanation: answer
+      });
+      alert("✅ Explanation saved successfully!");
+    } catch (err) {
+      console.error("Failed to save explanation:", err);
+      alert("❌ Failed to save explanation");
+    }
+    setSaving(false);
   };
 
   return (
@@ -68,7 +87,16 @@ export default function AIExplain() {
 
       {answer && (
         <Card>
-          <h3>📘 Explanation</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h3>📘 Explanation</h3>
+            <button 
+              className="secondary-btn" 
+              onClick={saveExplanation}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "💾 Save"}
+            </button>
+          </div>
           <div>{renderExplain(answer)}</div>
         </Card>
       )}

@@ -64,9 +64,25 @@ function Quiz() {
     (q, i) => answers[i] === q.answer
   ).length;
 
-  // 🔹 Submit quiz + update progress
+  // 🔹 Submit quiz + update progress + save quiz
   const submitQuiz = async () => {
     setSubmitted(true);
+
+    // Save quiz results
+    try {
+      await api.post("/saved/quizzes", {
+        topic: topic,
+        questions: {
+          questions: questions,
+          answers: answers
+        },
+        score: score,
+        total_questions: questions.length
+      });
+      console.log("✅ Quiz saved successfully");
+    } catch (err) {
+      console.error("Failed to save quiz:", err);
+    }
 
     // Pass condition: 60%
     if (score >= questions.length * 0.6) {

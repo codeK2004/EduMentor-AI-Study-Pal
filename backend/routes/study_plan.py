@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-import json, re
+import json as json_lib, re
 
 from models.student import StudyRequest
 from models.study_plan import StudyPlan
@@ -9,6 +9,28 @@ from models.user import User
 from ai.gemini import generate_text
 from utils.dependencies import get_current_user
 from database.session import get_db
+
+def parse_progress_data(completed_day_numbers_str):
+    """
+    Parse progress data from database, handling both old and new formats
+    Old format: "1,2,3" (comma-separated string)
+    New format: '{"plan_id": [1,2,3]}' (JSON string)
+    """
+    if not completed_day_numbers_str:
+        return {}
+    
+    try:
+        # Try to parse as JSON first (new format)
+        data = json_lib.loads(completed_day_numbers_str)
+        if isinstance(data, dict):
+            return data
+        else:
+            # If it's not a dict, treat as old format
+            return {}
+    except (json_lib.JSONDecodeError, ValueError):
+        # If JSON parsing fails, it might be old comma-separated format
+        # For now, return empty dict to start fresh
+        return {}
 
 router = APIRouter(prefix="/study", tags=["Study Plans"])
 
@@ -44,7 +66,7 @@ Return ONLY JSON in this format:
     if not match:
         raise HTTPException(status_code=500, detail="AI response invalid")
 
-    plan_json = json.loads(match.group())
+    plan_json = json_lib.loads(match.group())
 
     study_plan = StudyPlan(
         user_id=current_user.id,
@@ -58,8 +80,39 @@ Return ONLY JSON in this format:
     db.commit()
     db.refresh(study_plan)
 
-    # Return the plan data
-    return plan_json
+    # Initialize progress for this specific plan
+    from models.user_progress import UserProgress
+    import json
+    
+    # Get or create user progress
+    progress = db.query(UserProgress).filter(UserProgress.user_id == current_user.id).first()
+    if not progress:
+        progress = UserProgress(
+            user_id=current_user.id,
+            total_days=0,
+            completed_days=0,
+            completed_day_numbers="{}"
+        )
+        db.add(progress)
+        db.commit()
+        db.refresh(progress)
+    
+    # Parse existing progress
+    plan_progress = parse_progress_data(progress.completed_day_numbers)
+    
+    # Initialize this plan's progress
+    total_days = len(plan_json.get("days", []))
+    plan_progress[str(study_plan.id)] = []
+    
+    # Update the progress record
+    progress.completed_day_numbers = json_lib.dumps(plan_progress)
+    db.commit()
+
+    # Return the plan data with ID
+    return {
+        "plan_id": study_plan.id,
+        "plan_data": plan_json
+    }
 
 
 # ==============================
@@ -77,15 +130,35 @@ def list_study_plans(
         .all()
     )
 
-    return [
-        {
+    # Get progress for each plan
+    from models.user_progress import UserProgress
+    
+    # Get user's progress record
+    progress_record = db.query(UserProgress).filter(UserProgress.user_id == current_user.id).first()
+    plan_progress = {}
+    
+    if progress_record:
+        plan_progress = parse_progress_data(progress_record.completed_day_numbers)
+    
+    result = []
+    
+    for p in plans:
+        plan_completed_days = plan_progress.get(str(p.id), [])
+        completed_days = len(plan_completed_days)
+        total_days = len(p.plan_data.get("days", [])) if p.plan_data else 0
+        is_completed = completed_days >= total_days if total_days > 0 else False
+        
+        result.append({
             "id": p.id,
             "subject": p.subject,
             "deadline_days": p.deadline_days,
             "created_at": p.created_at,
-        }
-        for p in plans
-    ]
+            "completed_days": completed_days,
+            "total_days": total_days,
+            "is_completed": is_completed
+        })
+
+    return result
 
 
 # ==============================
@@ -109,12 +182,22 @@ def get_study_plan(
     if not plan:
         raise HTTPException(status_code=404, detail="Study plan not found")
 
-    # Get user's overall progress
+    # Get plan-specific progress
     from models.user_progress import UserProgress
-    progress = db.query(UserProgress).filter(UserProgress.user_id == current_user.id).first()
     
-    completed_days = progress.completed_days if progress else 0
+    progress_record = db.query(UserProgress).filter(UserProgress.user_id == current_user.id).first()
+    
+    completed_days = 0
+    is_completed = False
+    
+    if progress_record:
+        plan_progress = parse_progress_data(progress_record.completed_day_numbers)
+        if isinstance(plan_progress, dict):
+            plan_completed_days = plan_progress.get(str(plan_id), [])
+            completed_days = len(plan_completed_days)
+    
     total_days = len(plan.plan_data.get("days", []))
+    is_completed = completed_days >= total_days if total_days > 0 else False
 
     return {
         "id": plan.id,
@@ -125,7 +208,7 @@ def get_study_plan(
         "created_at": plan.created_at,
         "completed_days": completed_days,
         "total_days": total_days,
-        "is_completed": completed_days >= total_days if total_days > 0 else False
+        "is_completed": is_completed
     }
 
 
@@ -199,7 +282,7 @@ Return ONLY JSON in this format:
     if not match:
         raise HTTPException(status_code=500, detail="AI generation failed")
 
-    plan.plan_data = json.loads(match.group())
+    plan.plan_data = json_lib.loads(match.group())
     db.commit()
     db.refresh(plan)
 

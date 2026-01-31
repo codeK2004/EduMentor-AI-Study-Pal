@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EduMentor Auth Debug</title>
+</head>
+<body>
+    <h1>🔐 EduMentor Authentication Debug</h1>
+    
+    <div id="status"></div>
+    
+    <button onclick="checkToken()">Check Token</button>
+    <button onclick="clearToken()">Clear Token</button>
+    <button onclick="goToApp()">Go to App</button>
+    
+    <script>
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const statusDiv = document.getElementById('status');
+            
+            if (token) {
+                statusDiv.innerHTML = `
+                    <h2>✅ Token Found</h2>
+                    <p><strong>Token:</strong> ${token.substring(0, 50)}...</p>
+                    <p><strong>Length:</strong> ${token.length} characters</p>
+                `;
+            } else {
+                statusDiv.innerHTML = `
+                    <h2>❌ No Token Found</h2>
+                    <p>You need to log in again.</p>
+                `;
+            }
+        }
+        
+        function clearToken() {
+            localStorage.removeItem('token');
+            document.getElementById('status').innerHTML = '<h2>🗑️ Token Cleared</h2>';
+        }
+        
+        function goToApp() {
+            window.location.href = 'http://localhost:5173';
+        }
+        
+        // Check on load
+        checkToken();
+    </script>
+</body>
+</html>

@@ -13,7 +13,7 @@ def get_resources(data: ResourceRequest):
     topic_text = f" on {data.topic}" if data.topic else ""
 
     prompt = f"""
-Suggest good learning resources for a student.
+Suggest good learning resources for a student. 
 
 Subject: {data.subject}{topic_text}
 

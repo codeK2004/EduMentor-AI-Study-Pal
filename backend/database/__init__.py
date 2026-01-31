@@ -1,2 +1,2 @@
-from models.user import User
-from models.study_plan import StudyPlan
+# Database package - avoid circular imports
+# Models are imported where needed, not at package level

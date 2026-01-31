@@ -210,6 +210,8 @@ body {
   margin: 0 auto;
   position: relative;
   z-index: 10;
+  background: transparent;
+  min-height: 100vh;
 }
 
 /* 🧱 CARD (PREMIUM DESIGN) */
@@ -377,6 +379,117 @@ button:hover::before {
   box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
 }
 
+/* 📑 TAB BUTTONS */
+.tab-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: var(--transition);
+  font-family: inherit;
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+/* 📝 FORM ELEMENTS */
+.input-group {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.input-icon {
+  font-size: 1.2rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  border-radius: 16px;
+  border: 2px solid var(--border-soft);
+  font-size: 1rem;
+  background: #ffffff;
+  color: var(--text-main);
+  font-family: inherit;
+  margin-bottom: 0;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--border-focus);
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.error-message {
+  color: var(--error);
+  font-size: 0.875rem;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resources-content {
+  margin-top: 1.5rem;
+}
+
+.resource-heading {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.resource-bullet {
+  margin-left: 16px;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.resource-text {
+  line-height: 1.6;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.save-inputs {
+  margin-bottom: 1rem;
+}
+
+.save-inputs .form-input {
+  margin-bottom: 1rem;
+}
+
+.save-inputs .form-input:last-child {
+  margin-bottom: 0;
+}
+
 .danger-btn {
   background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
   color: white;
@@ -403,20 +516,10 @@ button:hover::before {
 }
 
 .progress-fill::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
-  animation: shimmer 2s infinite;
+  /* Remove shimmer animation */
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
+/* Remove shimmer animation */
 
 /* 🏠 HOME PAGE */
 .home-hero {
@@ -430,20 +533,10 @@ button:hover::before {
 }
 
 .home-hero::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-  animation: float 6s ease-in-out infinite;
+  /* Remove floating animation */
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(180deg); }
-}
+/* Remove float animation */
 
 .home-hero h1 {
   font-size: 3.5rem;
@@ -615,12 +708,10 @@ button:hover::before {
   border: 2px solid rgba(255,255,255,0.3);
   border-radius: 50%;
   border-top-color: white;
-  animation: spin 1s ease-in-out infinite;
+  /* Remove spin animation */
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+/* Remove spin animation */
 
 /* 🎨 UTILITY CLASSES */
 .text-center { text-align: center; }
@@ -685,7 +776,7 @@ button:hover::before {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
-  animation: float 6s ease-in-out infinite;
+  /* Remove float animation */
 }
 
 .shape-1 {
@@ -1141,6 +1232,9 @@ button:hover::before {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem 0;
+  background: transparent;
+  position: relative;
+  z-index: 2;
 }
 
 .page-title {
@@ -1375,91 +1469,28 @@ button:hover::before {
     max-width: 300px;
   }
 }
-/* 📋 PLAN CARD ENHANCEMENTS */
+/* 📋 SIMPLIFIED PLAN CARD - NO ANIMATIONS */
 .plan-card {
-  background: var(--card-bg);
-  border-radius: 20px;
-  border: 2px solid var(--border-soft);
-  box-shadow: var(--card-shadow);
-  overflow: hidden;
-  transition: var(--transition);
-  position: relative;
-}
-
-.plan-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-}
-
-.plan-card.completed::before {
-  background: linear-gradient(90deg, var(--success) 0%, var(--accent) 100%);
-}
-
-.plan-card:hover {
-  border-color: var(--primary);
-  box-shadow: 0 25px 50px -12px rgba(99, 102, 241, 0.25);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
 }
 
 .plan-card.completed {
-  border-color: var(--success);
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, rgba(16, 185, 129, 0.01) 100%);
+  border-color: #10b981;
+  background: #f0fdf4;
 }
 
 .plan-card-header {
-  padding: 1.5rem 2rem 1rem;
-  border-bottom: 1px solid var(--border-soft);
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.03) 0%, rgba(139, 92, 246, 0.02) 100%);
-}
-
-.day-badge {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
   margin-bottom: 1rem;
 }
 
-.day-number {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary);
-  background: rgba(99, 102, 241, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 12px;
-}
-
-.completion-badge {
-  font-size: 1.5rem;
-  animation: bounce 0.5s ease-in-out;
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-10px); }
-  60% { transform: translateY(-5px); }
-}
-
-.progress-indicator {
-  width: 100%;
-  height: 6px;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-indicator .progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
 .plan-card-content {
-  padding: 2rem;
+  /* Simple content styling */
 }
 
 .topic-title {
@@ -1565,19 +1596,10 @@ button:hover::before {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  animation: slideIn 0.5s ease-out;
+  /* Remove slideIn animation */
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* Remove slideIn animation */
 
 @media (max-width: 768px) {
   .plan-card-header {
@@ -1663,18 +1685,17 @@ button:hover::before {
 }
 
 .plans-layout {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 2rem;
-  min-height: 600px;
+  display: block;
+  width: 100%;
+  background: transparent;
 }
 
 .plans-sidebar {
-  background: var(--card-bg);
-  border-radius: 20px;
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--card-shadow);
-  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  width: 100%;
 }
 
 .plans-header {
@@ -1702,15 +1723,16 @@ button:hover::before {
 }
 
 .plans-list {
-  max-height: 500px;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
+  /* Remove all performance-intensive properties */
 }
 
 .plan-item {
   padding: 1.5rem 2rem;
   border-bottom: 1px solid var(--border-soft);
   cursor: pointer;
-  transition: var(--transition);
+  /* Remove all transitions and performance hints */
   position: relative;
 }
 
@@ -1755,12 +1777,12 @@ button:hover::before {
 .plan-actions {
   display: flex;
   gap: 0.5rem;
-  opacity: 0;
-  transition: var(--transition);
+  opacity: 1;
+  /* Remove all transitions and performance hints */
 }
 
 .plan-item:hover .plan-actions {
-  opacity: 1;
+  /* Remove hover effect that causes performance issues */
 }
 
 .action-btn {
@@ -1782,12 +1804,11 @@ button:hover::before {
 }
 
 .plan-details {
-  background: var(--card-bg);
-  border-radius: 20px;
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--card-shadow);
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
   padding: 2rem;
-  overflow-y: auto;
+  width: 100%;
 }
 
 .plan-details-header {
@@ -2173,21 +2194,187 @@ button:hover::before {
   gap: 0.75rem;
   margin: 1rem 0;
   box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-  animation: celebrationPulse 2s ease-in-out infinite;
+  /* Remove celebrationPulse animation */
 }
 
-@keyframes celebrationPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 12px 35px rgba(16, 185, 129, 0.4);
-  }
-}
+/* Remove celebrationPulse animation */
 
 .completion-badge-large span {
   font-size: 1.5rem;
-  animation: bounce 1s ease-in-out infinite;
+  /* Remove bounce animation */
+}
+
+.plan-actions {
+  display: flex;
+  gap: 0.5rem;
+  opacity: 1;
+}
+
+/* Remove all complex animations, gradients, and effects */
+.plan-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.plan-grid {
+  display: block;
+}
+
+.plan-grid .plan-card {
+  margin-bottom: 1.5rem;
+}
+/* 📊 INDIVIDUAL PLAN PROGRESS CARDS */
+.individual-plans-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.plan-progress-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.plan-progress-card:hover {
+  background: #f1f5f9;
+  border-color: #6366f1;
+}
+
+.plan-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.plan-info h4 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.plan-duration {
+  background: #6366f1;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.completion-badge {
+  background: #10b981;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.plan-stats {
+  text-align: right;
+}
+
+.progress-text {
+  display: block;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.progress-percent {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.plan-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.plan-actions .secondary-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .plan-progress-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .plan-stats {
+    text-align: left;
+  }
+  
+  .plan-actions {
+    justify-content: flex-start;
+  }
+}
+/* 📊 MINI PROGRESS BARS FOR PLAN SIDEBAR */
+.plan-badges {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.plan-progress-mini {
+  margin: 1rem 0 0.5rem 0;
+  padding: 0.75rem;
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.progress-info .progress-text {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.progress-info .progress-percent {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #6366f1;
+}
+
+.progress-bar-mini {
+  width: 100%;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill-mini {
+  height: 100%;
+  background: linear-gradient(90deg, #6366f1 0%, #10b981 100%);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.plan-item.active .plan-progress-mini {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: #6366f1;
+}
+
+.plan-item.active .progress-info .progress-percent {
+  color: #4f46e5;
 }

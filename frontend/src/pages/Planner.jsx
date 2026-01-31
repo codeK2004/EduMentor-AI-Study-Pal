@@ -7,6 +7,7 @@ function Planner({ setTab }) {
   const [weakAreas, setWeakAreas] = useState("");
   const [days, setDays] = useState("");
   const [plan, setPlan] = useState([]);
+  const [currentPlanId, setCurrentPlanId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -14,15 +15,17 @@ function Planner({ setTab }) {
 
   // Fetch progress when component mounts or plan changes
   useEffect(() => {
-    if (plan.length > 0) {
+    if (plan.length > 0 && currentPlanId) {
       fetchProgress();
     }
-  }, [plan.length]);
+  }, [plan.length, currentPlanId]);
 
   const fetchProgress = async () => {
     try {
-      const res = await api.get("/progress/");
-      setCompletedDays(res.data.completed_day_numbers || []);
+      if (currentPlanId) {
+        const res = await api.get(`/progress/plan/${currentPlanId}`);
+        setCompletedDays(res.data.completed_day_numbers || []);
+      }
     } catch (err) {
       console.error("Failed to fetch progress:", err);
     }
@@ -52,17 +55,13 @@ function Planner({ setTab }) {
       });
 
       // 🔹 2. Validate response
-      if (!res.data || !Array.isArray(res.data.days)) {
+      if (!res.data || !res.data.plan_data || !Array.isArray(res.data.plan_data.days)) {
         throw new Error("Invalid plan format from backend");
       }
 
-      setPlan(res.data.days);
+      setPlan(res.data.plan_data.days);
+      setCurrentPlanId(res.data.plan_id);
       setSuccess(true);
-
-      // 🔹 3. Initialize progress using plan length
-      await api.post("/progress/init-plan", {
-        total_days: res.data.days.length,
-      });
 
     } catch (err) {
       console.error("PLAN ERROR:", err);
@@ -77,6 +76,7 @@ function Planner({ setTab }) {
     setWeakAreas("");
     setDays("");
     setPlan([]);
+    setCurrentPlanId(null);
     setSuccess(false);
     setError("");
   };
@@ -214,6 +214,7 @@ function Planner({ setTab }) {
             {plan.map((dayObj) => (
               <PlanCard
                 key={dayObj.day}
+                planId={currentPlanId}
                 day={dayObj.day}
                 topic={dayObj.topic}
                 tasks={dayObj.tasks}
