@@ -10,12 +10,16 @@ import Notes from "./pages/Notes";
 import SavedContent from "./pages/SavedContent";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import { isAuthenticated, removeToken } from "./utils/auth";
 
 export default function App() {
   const [tab, setTab] = useState("home");
   const [loggedIn, setLoggedIn] = useState(isAuthenticated());
   const [showSignup, setShowSignup] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetToken, setResetToken] = useState(null);
 
   // Check authentication status on mount and periodically
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function App() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    
+
     // Check every 30 seconds
     const interval = setInterval(checkAuth, 30000);
 
@@ -60,10 +64,36 @@ export default function App() {
   };
 
   if (!loggedIn) {
+    if (resetToken) {
+      return (
+        <ResetPassword
+          resetToken={resetToken}
+          onResetSuccessful={() => {
+            setResetToken(null);
+            setShowForgotPassword(false);
+            setShowSignup(false);
+          }}
+        />
+      );
+    }
+
+    if (showForgotPassword) {
+      return (
+        <ForgotPassword
+          onBackToLogin={() => setShowForgotPassword(false)}
+          onTokenReceived={(token) => setResetToken(token)}
+        />
+      );
+    }
+
     return showSignup ? (
       <Signup onLogin={handleLogin} setShowSignup={setShowSignup} />
     ) : (
-      <Login onLogin={handleLogin} setShowSignup={setShowSignup} />
+      <Login
+        onLogin={handleLogin}
+        setShowSignup={setShowSignup}
+        setShowForgotPassword={setShowForgotPassword}
+      />
     );
   }
 
@@ -126,32 +156,32 @@ export default function App() {
           </button>
 
           <button
-              className={tab === "explain" ? "nav-btn active" : "nav-btn"}
-              onClick={() => setTab("explain")}
+            className={tab === "explain" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setTab("explain")}
           >
             <span>🤖</span>
             AI Explain
           </button>
-          
+
           <button
-              className={tab === "resources" ? "nav-btn active" : "nav-btn"}
-              onClick={() => setTab("resources")}
+            className={tab === "resources" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setTab("resources")}
           >
             <span>📚</span>
             Resources
           </button>
-          
+
           <button
-              className={tab === "notes" ? "nav-btn active" : "nav-btn"}
-              onClick={() => setTab("notes")}
+            className={tab === "notes" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setTab("notes")}
           >
             <span>📝</span>
             Notes
           </button>
 
           <button
-              className={tab === "saved" ? "nav-btn active" : "nav-btn"}
-              onClick={() => setTab("saved")}
+            className={tab === "saved" ? "nav-btn active" : "nav-btn"}
+            onClick={() => setTab("saved")}
           >
             <span>💾</span>
             Saved

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import api from "../utils/api";
 import { setToken } from "../utils/auth";
 
-function Login({ onLogin, setShowSignup }) {
+function Login({ onLogin, setShowSignup, setShowForgotPassword }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,7 +37,7 @@ function Login({ onLogin, setShowSignup }) {
           <div className="shape shape-3"></div>
         </div>
       </div>
-      
+
       <div className="auth-content">
         <div className="auth-header">
           <div className="auth-logo">
@@ -46,7 +46,7 @@ function Login({ onLogin, setShowSignup }) {
           </div>
           <p className="auth-subtitle">Let's Plan and Study Together</p>
           <p className="auth-description">
-            Your AI-powered learning companion for personalized study plans, 
+            Your AI-powered learning companion for personalized study plans,
             interactive quizzes, and intelligent explanations.
           </p>
         </div>
@@ -80,6 +80,15 @@ function Login({ onLogin, setShowSignup }) {
                 required
                 className="auth-input"
               />
+              <div style={{ textAlign: "right", marginTop: "8px" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  style={{ background: "none", border: "none", color: "#667eea", cursor: "pointer", fontSize: "14px" }}
+                >
+                  Forgot Password?
+                </button>
+              </div>
             </div>
 
             {error && (
@@ -89,9 +98,10 @@ function Login({ onLogin, setShowSignup }) {
               </div>
             )}
 
-            <button 
-              className={`primary-btn auth-submit ${loading ? 'loading' : ''}`} 
-              type="submit" 
+
+            <button
+              className={`primary-btn auth-submit ${loading ? 'loading' : ''}`}
+              type="submit"
               disabled={loading}
             >
               {loading ? (
